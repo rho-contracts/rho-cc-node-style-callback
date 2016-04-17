@@ -45,8 +45,8 @@ npm install rho-contracts rho-cc-node-style-callback
 Contribute
 ----------
 
-- Issue Tracker: github.com/bodylabs/rho-cc-node-style-callback/issues
-- Source Code: github.com/bodylabs/rho-cc-node-style-callback
+- Issue Tracker: https://github.com/bodylabs/rho-cc-node-style-callback/issues
+- Source Code: https://github.com/bodylabs/rho-cc-node-style-callback
 
 Pull requests welcome!
 
