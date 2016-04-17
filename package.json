@@ -1,0 +1,34 @@
+{
+  "name": "rho-cc-node-style-callback",
+  "description": "Create rho-contracts for Node-style callbacks",
+  "version": "1.0.0",
+  "license": "MPL-2.0",
+  "main": "src/node-style-callback.js",
+  "scripts": {
+    "preinstall": "python -c 'import sys; sys.version_info[:2] == (2, 7) or sys.exit(-1)' || { echo >&2 This requires Python 2.7 but it is not installed. Please obtain Python 2.7. Aborting.; exit 1; }",
+    "install": "pip install baiji",
+    "jscs": "jscs --config node_modules/bodylabs-javascript-style/jscs/jscsrc-shared src --extract '*.js'",
+    "eslint": "eslint --config node_modules/bodylabs-javascript-style/eslint/eslintrc-shared.yml 'src/**/*.js'",
+    "lint": "npm run jscs && npm run eslint",
+    "unittest": "mocha src",
+    "test": "npm run unittest && npm run lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:bodylabs/rho-cc-node-style-callback.git"
+  },
+  "dependencies": {
+    "underscore": "~1.8.0"
+  },
+  "peerDependencies": {
+    "rho-contracts": "*"
+  },
+  "devDependencies": {
+    "bodylabs-javascript-style": "^4.0.0",
+    "eslint": "^2.0.0",
+    "jscs": "^2.1.1",
+    "mocha": "~2.0.1",
+    "rho-contracts": "git+https://github.com/bodylabs/rho-contracts.js.git#1.0.1",
+    "should": "~8.3.1"
+  }
+}
