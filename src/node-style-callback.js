@@ -1,29 +1,102 @@
 var c = require('rho-contracts'),
+    util = require('util'),
     cc = require('./common-contracts'),
     _ = require('underscore');
 
-// Create a contract for a Node-style callback. Pass in an optional contract
-// for the `err` argument. (If `null` or `undefined` is specified, the error
-// must satisfy `c.error`.) Follow with rho-contracts-style argument specs for
-// the remaining arguments, e.g. `{ results: c.array(c.number) }`.
+// Creates a contract for a node-style callback. The returned contract
+// accepts functions whose first argument is `isA(Error)`, and the other
+// arguments are specified the same way as `c.fun`.
 //
-var nodeStyleCallback = module.exports = c.fun({ errorContract: c.optional(c.contract) })
-    .extraArgs(c.array(cc.oneKeyHash(c.contract)))
-    .wrap(function (errorContract) {
-        var errorArgSpec = { err: c.optional(errorContract || c.error) };
+// Calling `withError` on the returned contract changes the type of
+// the expected error from `c.any` to the contract specified.
+//
+// Invoking a node-style callback with both a error and success
+// values will raise a `ContractError`.
 
-        var rawResultArgSpecs = Array.prototype.slice.call(arguments, 1);
-        var resultArgSpecs = _(rawResultArgSpecs).map(function (argSpec) {
-            return _(argSpec).mapObject(function (contract) {
-                // Seems like an unnecessary lambda, but it's not. We need to
-                // discard remaining arguments to mapObject.
-                return c.optional(contract);
-            });
-        });
+var _makeFailureFnContract = function(errorContract) {
+    return c.fun({ error: errorContract }).extraArgs(c.any).rename('callback');
+}
 
-        var argSpecs = [errorArgSpec].concat(resultArgSpecs);
+var _makeSuccessFnContract = function(contracts) {
+    return c.fun.apply(null, [{ error: c.oneOf(null, undefined)}].concat(contracts))
+        .rename('callback');
+}
 
-        return c.fun.apply(null, argSpecs);
-    });
+var callback =
+    c.fun().extraArgs([cc.oneKeyHash(c.contract)]).returns(c.functionContract)
+    .wrap(
+        function callback(/*...*/) {
+            var result = c.fun().extraArgs(c.any);
 
-module.exports = nodeStyleCallback;
+            result._successContract = _makeSuccessFnContract(_.toArray(arguments));
+
+            result._failureContract = _makeFailureFnContract(c.any);
+
+            result.withError = c.fun({ newErrorContract: c.contract }).wrap(
+                function withError(newErrorContract) {
+                    var self = this;
+                    return _.extend(
+                        {}, self,
+                        { _failureContract: _makeFailureFnContract(newErrorContract) })
+                });
+
+            var oldWrapper = result.wrapper;
+            result.wrapper = function (fn, next, context) {
+                var self = this;
+
+                var errFn = self._failureContract.wrapper(fn, next, context);
+                var successFn = self._successContract.wrapper(fn, next, context);
+
+                return oldWrapper.call(self, function (err /*...*/) {
+
+                    if (arguments.length == 0) {
+                        // Receiving no arguments is always wrong
+                        var msg = util.format("node-style callback invoked with no arguments");
+                        context.fail(new c.ContractError(context, msg).fullContract());
+
+                    } else if (err === null || err === undefined) {
+                        // Received no error, check against the normal contract
+                        return successFn.apply(this, arguments);
+
+                    } else if (arguments.length != 1) {
+                        // Received both an error and normal arguments, this is always wrong
+                        var msg = util.format(
+                            "node-style callback invoked with both an error and %s success argument%s",
+                            arguments.length == 2 ? 'a' : arguments.length-1,
+                            arguments.length > 2 ? 's' : '');
+                        context.fail(new c.ContractError(context, msg).fullContract());
+
+                    } else {
+                        // Received an error, check it
+                        return errFn.apply(this, arguments);
+                    }
+                }, next, context);
+            };
+
+            result.extraArgs = function (arrayContract) {
+                var self = this;
+                return _.extend({}, self, {
+                    _successContract: self._successContract.extraArgs(arrayContract)
+                });
+            };
+
+            result.contractName = 'callback';
+
+            result.toString = function () {
+                var self = this;
+                var fC = self._failureContract;
+                var sC = self._successContract;
+
+                return "c." + self.contractName + "(" +
+                    (self.thisContract !== c.any ? "this: " + self.thisContract + ", " : "") +
+                    fC.argumentContracts[0].toString() + ", " +
+                    sC.argumentContracts.slice(1).join(", ") +
+                    (sC.extraArgumentContract ? "..." + sC.extraArgumentContract : "") +
+                    " -> " + self.resultContract + ")";
+            };
+
+            return result;
+        }
+    )
+
+module.exports = { callback: callback };

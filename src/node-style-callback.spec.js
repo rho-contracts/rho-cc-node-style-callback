@@ -1,22 +1,22 @@
 var c = require('rho-contracts'),
-    nodeStyleCallback = require('./node-style-callback');
+    should = require('should'),
+    _ = require('underscore');
 
-var should = require('should');
+_.extend(c, require('./node-style-callback'));
+
 
 // For convenience and conciseness.
 var good = should.doesNotThrow;
 var bad = function (block) { should.throws(block, c.ContractError); };
 
-describe('nodeStyleCallback with a number result', function () {
+describe('c.callback with a number result', function () {
 
-    var numberCallback = nodeStyleCallback(null, { result: c.number });
+    var numberCallback = c.callback({ result: c.number });
     var wrappedCallback = numberCallback.wrap(function () {});
 
     context('invoked with an error', function () {
         it('does not raise a contract error', function () {
             good(function () { wrappedCallback(Error()); });
-            good(function () { wrappedCallback(Error(), null); });
-            good(function () { wrappedCallback(Error(), undefined); });
         });
     });
 
@@ -39,10 +39,8 @@ describe('nodeStyleCallback with a number result', function () {
         });
     });
 
-    // This test fails. It seems to me this is the desired behavior, but I do
-    // not know how to implement it.
     context('invoked with no arguments', function () {
-        it.skip('raises a contract error', function () {
+        it('raises a contract error', function () {
             bad(function () { wrappedCallback(); });
             bad(function () { wrappedCallback(null); });
             bad(function () { wrappedCallback(null, null); });
@@ -53,19 +51,18 @@ describe('nodeStyleCallback with a number result', function () {
         });
     });
 
-    // This test fails. It seems to me this is the desired behavior, but I do
-    // not know how to implement it.
     context('invoked with both an error and a value', function () {
-        it.skip('raises a contract error', function () {
+        it('raises a contract error', function () {
             bad(function () { wrappedCallback(Error(), 0); });
+            bad(function () { wrappedCallback(Error(), null); });
+            bad(function () { wrappedCallback(Error(), undefined); });
         });
     });
 });
 
-describe('nodeStyleCallback with multiple results', function () {
+describe('c.callback with multiple results', function () {
 
-    var numberCallback = nodeStyleCallback(
-        null,
+    var numberCallback = c.callback(
         { first: c.number },
         { second: c.string },
         { third: c.bool }
@@ -79,15 +76,15 @@ describe('nodeStyleCallback with multiple results', function () {
     });
 
     context('invoked with an invalid argument', function () {
-        it('does not raise a contract error', function () {
+        it('raise a contract error', function () {
             bad(function () { wrappedCallback(null, 1, '1', 'true'); });
         });
     });
 });
 
-describe('nodeStyleCallback with no result', function () {
+describe('c.callback with no result', function () {
 
-    var numberCallback = nodeStyleCallback();
+    var numberCallback = c.callback();
     var wrappedCallback = numberCallback.wrap(function () {});
 
     context('invoked with an error', function () {
@@ -104,10 +101,10 @@ describe('nodeStyleCallback with no result', function () {
     });
 });
 
-describe('nodeStyleCallback with a custom error contract', function () {
+describe('c.callback with a custom error contract', function () {
 
     var errorContract = c.array(c.error);
-    var numberCallback = nodeStyleCallback(errorContract);
+    var numberCallback = c.callback().withError(errorContract);
     var wrappedCallback = numberCallback.wrap(function () {});
 
     context('invoked with an error satisfying the contract', function () {
@@ -123,4 +120,26 @@ describe('nodeStyleCallback with a custom error contract', function () {
             bad(function () { wrappedCallback(Error()); });
         });
     });
+});
+
+describe('c.callback with a `returns` contract', function () {
+    var returnsContract = c.callback({ result: c.bool }).withError(c.error).returns(c.number)
+    var goodCallback = returnsContract.wrap(function () { return 12; });
+    var badCallback = returnsContract.wrap(function () { return false; });
+
+    it('displays a good description', function () {
+        returnsContract.toString().should.eql('c.callback(c.error, c.bool -> c.number)');
+    })
+
+    context('when wrapping a good function', function () {
+        it('does not raise an error', function () {
+            good(function () { goodCallback(null, true); });
+            goodCallback(null, true).should.be.eql(12);
+        });
+    });
+    context('when wrapping a broken function', function () {
+        it('raise an error', function () {
+            bad(function () { badCallback(null, true); });
+        });
+    })
 });

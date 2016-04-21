@@ -26,7 +26,7 @@
     "eslint": "^2.0.0",
     "jscs": "^2.1.1",
     "mocha": "~2.0.1",
-    "rho-contracts": "git+https://github.com/bodylabs/rho-contracts.js.git#1.0.1",
+    "rho-contracts": "git+https://github.com/bodylabs/rho-contracts.js.git#1.0.2",
     "should": "~8.3.1"
   }
 }
