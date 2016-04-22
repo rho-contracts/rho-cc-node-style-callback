@@ -6,15 +6,29 @@ var c = require('rho-contracts'),
     _ = require('underscore');
 
 // Creates a contract for a Node-style callback. The returned contract
-// accepts functions whose first argument is `isA(Error)`, and the other
+// accepts functions whose first argument is `c.any`, and the other
 // arguments are specified the same way as `c.fun`.
+//
+// In the Node-style callback convension, any non-null non-undefined
+// value for the first argument indicates an error. When an error is
+// indicated, the other arguments must not be present, else a contract
+// is raise.
+//
+// As a special case, invoking a callback with no arguments indicates
+// a success. If the success arguments' contract allows it, the
+// wrapped function will receive one argument set to `undefined`.
 //
 // Calling `withError` on the returned contract changes the type of
 // the expected error from `c.any` to the contract specified.
 //
-// Invoking a Node-style callback with both a error and success
+// Invoking a Node-style callback with both an error and success
 // values will raise a `ContractError`.
-
+//
+// Finally, the `callback` function itself has a method
+// `withDefaultError` which returns a new `callback` function. Using
+// this newly created callback function will create contracts whose
+// default error contract is the one given to `withDefaultError`.
+//
 var _makeFailureFnContract = function (errorContract) {
     return c.fun({ error: errorContract }).extraArgs(c.any).rename('callback');
 };
@@ -54,8 +68,8 @@ var _makeCallback =
                         return oldWrapper.call(self, function (err /*...*/) {
 
                             if (arguments.length == 0) {
-                                // Special case for a zero-argument success; provide a `null` first argument.
-                                var args = [null].concat(_.toArray(arguments));
+                                // Special case for a zero-argument success; provide a `undefined` first argument.
+                                var args = [undefined].concat(_.toArray(arguments));
                                 return fnWrappedForSuccess.apply(this, args);
 
                             } else if (err === null || err === undefined) {
