@@ -1,16 +1,17 @@
+
 var c = require('rho-contracts'),
     util = require('util'),
     cc = require('./common-contracts'),
     _ = require('underscore');
 
-// Creates a contract for a node-style callback. The returned contract
+// Creates a contract for a Node-style callback. The returned contract
 // accepts functions whose first argument is `isA(Error)`, and the other
 // arguments are specified the same way as `c.fun`.
 //
 // Calling `withError` on the returned contract changes the type of
 // the expected error from `c.any` to the contract specified.
 //
-// Invoking a node-style callback with both a error and success
+// Invoking a Node-style callback with both a error and success
 // values will raise a `ContractError`.
 
 var _makeFailureFnContract = function(errorContract) {
@@ -44,40 +45,33 @@ var callback =
             result.wrapper = function (fn, next, context) {
                 var self = this;
 
-                var errFn = self._failureContract.wrapper(fn, next, context);
-                var successFn = self._successContract.wrapper(fn, next, context);
+                var fnWrappedForErr = self._failureContract.wrapper(fn, next, context);
+                var fnWrappedForSuccess = self._successContract.wrapper(fn, next, context);
 
                 return oldWrapper.call(self, function (err /*...*/) {
 
                     if (arguments.length == 0) {
-                        // Receiving no arguments is always wrong
-                        var msg = util.format("node-style callback invoked with no arguments");
-                        context.fail(new c.ContractError(context, msg).fullContract());
+                        // Special case for a zero-argument success; provide a `null` first argument.
+                        var args = [null].concat(_.toArray(arguments));
+                        return fnWrappedForSuccess.apply(this, args);
 
                     } else if (err === null || err === undefined) {
-                        // Received no error, check against the normal contract
-                        return successFn.apply(this, arguments);
+                        // Received no error, check against the normal contract.
+                        return fnWrappedForSuccess.apply(this, arguments);
 
                     } else if (arguments.length != 1) {
-                        // Received both an error and normal arguments, this is always wrong
+                        // Received both an error and normal arguments, this is always wrong.
                         var msg = util.format(
-                            "node-style callback invoked with both an error and %s success argument%s",
+                            "Node-style callback invoked with both an error and %s success argument%s",
                             arguments.length == 2 ? 'a' : arguments.length-1,
                             arguments.length > 2 ? 's' : '');
                         context.fail(new c.ContractError(context, msg).fullContract());
 
                     } else {
-                        // Received an error, check it
-                        return errFn.apply(this, arguments);
+                        // Received an error, check it.
+                        return fnWrappedForErr.apply(this, arguments);
                     }
                 }, next, context);
-            };
-
-            result.extraArgs = function (arrayContract) {
-                var self = this;
-                return _.extend({}, self, {
-                    _successContract: self._successContract.extraArgs(arrayContract)
-                });
             };
 
             result.contractName = 'callback';

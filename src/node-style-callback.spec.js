@@ -9,6 +9,7 @@ _.extend(c, require('./node-style-callback'));
 var good = should.doesNotThrow;
 var bad = function (block) { should.throws(block, c.ContractError); };
 
+
 describe('c.callback with a number result', function () {
 
     var numberCallback = c.callback({ result: c.number });
@@ -75,6 +76,12 @@ describe('c.callback with multiple results', function () {
         });
     });
 
+    context('invoked with an error', function () {
+        it('does not raise a contract error', function () {
+            good(function () { wrappedCallback(Error()); });
+        });
+    });
+
     context('invoked with an invalid argument', function () {
         it('raise a contract error', function () {
             bad(function () { wrappedCallback(null, 1, '1', 'true'); });
@@ -84,8 +91,12 @@ describe('c.callback with multiple results', function () {
 
 describe('c.callback with no result', function () {
 
-    var numberCallback = c.callback();
-    var wrappedCallback = numberCallback.wrap(function () {});
+    var emptyCallback = c.callback();
+    var wrappedCallback = emptyCallback.wrap(function () {});
+
+    it('is invoked normally with no arguments', function () {
+        good(function () { wrappedCallback();} );
+    });
 
     context('invoked with an error', function () {
         it('does not raise a contract error', function () {
@@ -97,6 +108,35 @@ describe('c.callback with no result', function () {
         it('raises a contract error', function () {
             bad(function () { wrappedCallback(null, 1); });
             bad(function () { wrappedCallback(undefined, 1); });
+        });
+    });
+});
+
+describe('c.callback with optional results', function () {
+    var optionCallback = c.callback({ result: c.optional(c.number)}).withError(c.string);
+    var wrapped = optionCallback.wrap(function () {});
+
+    it('is invoked normally with no arguments', function () {
+        good(function () { wrapped();} );
+    });
+
+    context('invoked with an incorrect error', function () {
+        it('raise a contract error', function () {
+            bad(function () { wrapped(Error()); });
+        });
+    });
+
+    context('invoked with a result', function () {
+        it('does not a contract error', function () {
+            good(function () { wrapped(null, 1); });
+            good(function () { wrapped(undefined, 1); });
+        });
+    });
+
+    context('invoked with an extra result', function () {
+        it('does not a contract error', function () {
+            bad(function () { wrapped(null, 1, 2); });
+            bad(function () { wrapped(undefined, 1, 3); });
         });
     });
 });
