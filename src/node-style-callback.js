@@ -67,7 +67,7 @@ var _makeCallback =
 
                         return oldWrapper.call(self, function (err /*...*/) {
 
-                            if (arguments.length == 0) {
+                            if (arguments.length === 0) {
                                 // Special case for a zero-argument success; provide a `undefined` first argument.
                                 var args = [undefined].concat(_.toArray(arguments));
                                 return fnWrappedForSuccess.apply(this, args);
@@ -76,11 +76,11 @@ var _makeCallback =
                                 // Received no error, check against the normal contract.
                                 return fnWrappedForSuccess.apply(this, arguments);
 
-                            } else if (arguments.length != 1) {
+                            } else if (arguments.length !== 1) {
                                 // Received both an error and normal arguments, this is always wrong.
                                 var msg = util.format(
                                     "Node-style callback invoked with both an error and %s success argument%s",
-                                    arguments.length == 2 ? 'a' : arguments.length - 1,
+                                    arguments.length === 2 ? 'a' : arguments.length - 1,
                                     arguments.length > 2 ? 's' : '');
                                 context.fail(new c.ContractError(context, msg).fullContract());
 
