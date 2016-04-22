@@ -183,3 +183,23 @@ describe('c.callback with a `returns` contract', function () {
         });
     });
 });
+
+describe('c.callback.withDefaultError invoked with c.error', function () {
+    var newCallback = c.callback.withDefaultError(c.error);
+    var contract = newCallback({ result: c.bool });
+    var wrapped = contract.wrap(function () { });
+
+    it('refuses string as an error', function () {
+        bad(function () { wrapped("boom"); });
+    });
+    it('accepts `Error()`s', function () {
+        good(function () { wrapped(Error()); });
+    });
+    it('accepts a success invocation', function () {
+        good(function () { wrapped(null, false); });
+    });
+    it('refuses an incorrect success invocation', function () {
+        bad(function () { wrapped(null, 5); });
+    });
+
+});
