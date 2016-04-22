@@ -65,12 +65,12 @@ var _makeCallback =
                         var fnWrappedForErr = self._failureContract.wrapper(fn, next, context);
                         var fnWrappedForSuccess = self._successContract.wrapper(fn, next, context);
 
-                        return oldWrapper.call(self, function (err /*...*/) {
+                        return oldWrapper.call(self, function (/*...*/) {
+                            var err = arguments[0];
 
                             if (arguments.length === 0) {
-                                // Special case for a zero-argument success; provide a `undefined` first argument.
-                                var args = [undefined].concat(_.toArray(arguments));
-                                return fnWrappedForSuccess.apply(this, args);
+                                // Special case for a zero-argument success; provide an `undefined` first argument.
+                                return fnWrappedForSuccess.apply(this, [undefined]);
 
                             } else if (err === null || err === undefined) {
                                 // Received no error, check against the normal contract.
