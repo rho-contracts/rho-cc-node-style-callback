@@ -1,3 +1,4 @@
+// jscs:disable disallowNamedUnassignedFunctions
 
 var c = require('rho-contracts'),
     util = require('util'),
@@ -14,14 +15,14 @@ var c = require('rho-contracts'),
 // Invoking a Node-style callback with both a error and success
 // values will raise a `ContractError`.
 
-var _makeFailureFnContract = function(errorContract) {
+var _makeFailureFnContract = function (errorContract) {
     return c.fun({ error: errorContract }).extraArgs(c.any).rename('callback');
-}
+};
 
-var _makeSuccessFnContract = function(contracts) {
-    return c.fun.apply(null, [{ error: c.oneOf(null, undefined)}].concat(contracts))
+var _makeSuccessFnContract = function (contracts) {
+    return c.fun.apply(null, [{ error: c.oneOf(null, undefined) }].concat(contracts))
         .rename('callback');
-}
+};
 
 var callback =
     c.fun().extraArgs([cc.oneKeyHash(c.contract)]).returns(c.functionContract)
@@ -38,7 +39,7 @@ var callback =
                     var self = this;
                     return _.extend(
                         {}, self,
-                        { _failureContract: _makeFailureFnContract(newErrorContract) })
+                        { _failureContract: _makeFailureFnContract(newErrorContract) });
                 });
 
             var oldWrapper = result.wrapper;
@@ -63,7 +64,7 @@ var callback =
                         // Received both an error and normal arguments, this is always wrong.
                         var msg = util.format(
                             "Node-style callback invoked with both an error and %s success argument%s",
-                            arguments.length == 2 ? 'a' : arguments.length-1,
+                            arguments.length == 2 ? 'a' : arguments.length - 1,
                             arguments.length > 2 ? 's' : '');
                         context.fail(new c.ContractError(context, msg).fullContract());
 
@@ -91,6 +92,6 @@ var callback =
 
             return result;
         }
-    )
+    );
 
 module.exports = { callback: callback };

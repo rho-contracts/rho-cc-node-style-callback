@@ -95,7 +95,7 @@ describe('c.callback with no result', function () {
     var wrappedCallback = emptyCallback.wrap(function () {});
 
     it('is invoked normally with no arguments', function () {
-        good(function () { wrappedCallback();} );
+        good(function () { wrappedCallback(); });
     });
 
     context('invoked with an error', function () {
@@ -113,11 +113,11 @@ describe('c.callback with no result', function () {
 });
 
 describe('c.callback with optional results', function () {
-    var optionCallback = c.callback({ result: c.optional(c.number)}).withError(c.string);
+    var optionCallback = c.callback({ result: c.optional(c.number) }).withError(c.string);
     var wrapped = optionCallback.wrap(function () {});
 
     it('is invoked normally with no arguments', function () {
-        good(function () { wrapped();} );
+        good(function () { wrapped(); });
     });
 
     context('invoked with an incorrect error', function () {
@@ -163,13 +163,13 @@ describe('c.callback with a custom error contract', function () {
 });
 
 describe('c.callback with a `returns` contract', function () {
-    var returnsContract = c.callback({ result: c.bool }).withError(c.error).returns(c.number)
+    var returnsContract = c.callback({ result: c.bool }).withError(c.error).returns(c.number);
     var goodCallback = returnsContract.wrap(function () { return 12; });
     var badCallback = returnsContract.wrap(function () { return false; });
 
     it('displays a good description', function () {
         returnsContract.toString().should.eql('c.callback(c.error, c.bool -> c.number)');
-    })
+    });
 
     context('when wrapping a good function', function () {
         it('does not raise an error', function () {
@@ -181,5 +181,5 @@ describe('c.callback with a `returns` contract', function () {
         it('raise an error', function () {
             bad(function () { badCallback(null, true); });
         });
-    })
+    });
 });
