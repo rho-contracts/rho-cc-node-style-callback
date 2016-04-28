@@ -9,6 +9,13 @@ Create [rho-contracts][] for Node-style callbacks.
 Usage
 -----
 
+You must use the Body Labs fork of rho-contracts:
+```js
+  "dependencies": {
+    "rho-contracts": "git+https://github.com/bodylabs/rho-contracts.js.git#1.1.0"
+  }
+```
+
 Use this module to create contracts for a Node-style callbacks. The returned contracts
 accept functions whose first argument satisfies some error contract, and the other
 arguments are specified the same way as `c.fun`.
