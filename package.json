@@ -19,7 +19,7 @@
     "underscore": "~1.8.0"
   },
   "peerDependencies": {
-    "rho-contracts": "*"
+    "rho-contracts": ">=1.1.0"
   },
   "devDependencies": {
     "bodylabs-javascript-style": "^4.0.0",
