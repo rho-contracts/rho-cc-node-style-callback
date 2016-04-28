@@ -33,8 +33,8 @@ var c = require('rho-contracts');
 
 var cc = {};
 
-cc.callback = require('rho-cc-node-style-callback').withDefautError(c.error)
-cc.countCallback = c.callback({ result: c.number })
+cc.callback = require('rho-cc-node-style-callback').withDefaultError(c.error)
+cc.countCallback = cc.callback({ result: c.number })
 ```
 
 
