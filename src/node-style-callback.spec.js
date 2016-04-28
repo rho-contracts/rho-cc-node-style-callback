@@ -1,6 +1,5 @@
 var c = require('rho-contracts'),
-    should = require('should'),
-    _ = require('underscore');
+    should = require('should');
 
 c.callback = require('./node-style-callback').withDefaultError(c.error);
 

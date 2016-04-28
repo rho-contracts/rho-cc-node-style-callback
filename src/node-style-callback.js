@@ -3,7 +3,6 @@
 var c = require('rho-contracts'),
     errors = require('rho-contracts/src/errors'),
     util = require('util'),
-    cc = require('./common-contracts'),
     _ = require('underscore');
 
 var _makeFailureFnContract = function (errorContract) {
