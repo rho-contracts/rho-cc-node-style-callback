@@ -9,28 +9,32 @@ Create [rho-contracts][] for Node-style callbacks.
 Usage
 -----
 
+Use this module to create contracts for a Node-style callbacks. The returned contracts
+accept functions whose first argument satisfies some error contract, and the other
+arguments are specified the same way as `c.fun`.
+
+In the Node-style callback convention, any non-null non-undefined
+value for the first argument indicates an error. When an error is
+indicated, the other arguments must not be present, else a contract
+error is raised.
+
+As a special case, invoking a callback with no arguments will invoke
+the wrapped function with one argument set to `undefined`.
+
+Calling `withError` on the returned contract changes the type of
+the error argument to the contract specified.
+
+The main entry point of this module is `withDefaultError`, which sets
+the expected error contract, like this:
+
 ```js
 
-var c = require('rho-contracts'),
-    nodeStyleCallback = require('rho-cc-node-style-callback');
+var c = require('rho-contracts');
 
 var cc = {};
 
-cc.countCallback = nodeStyleCallback(null, { result: c.number })
-    .rename('countCallback');
-```
-
-When a function wrapped in this contract is invoked:
-
-- If an error is present it must satisfy `c.error`.
-- If a result is present, it must satisfy `c.number`.
-- No additional arguments are allowed.
-
-The caller can optionally specify a contract for the error:
-
-```js
-cc.countCallback = nodeStyleCallback(c.array(c.error), { result: c.number })
-    .rename('countCallback');
+cc.callback = require('rho-cc-node-style-callback').withDefautError(c.error)
+cc.countCallback = c.callback({ result: c.number })
 ```
 
 

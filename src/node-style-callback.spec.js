@@ -2,8 +2,7 @@ var c = require('rho-contracts'),
     should = require('should'),
     _ = require('underscore');
 
-_.extend(c, require('./node-style-callback'));
-
+c.callback = require('./node-style-callback').withDefaultError(c.error);
 
 // For convenience and conciseness.
 var good = should.doesNotThrow;
@@ -185,7 +184,7 @@ describe('c.callback with a `returns` contract', function () {
 });
 
 describe('c.callback.withDefaultError invoked with c.error', function () {
-    var newCallback = c.callback.withDefaultError(c.error);
+    var newCallback = require('./node-style-callback').withDefaultError(c.error);
     var contract = newCallback({ result: c.bool });
     var wrapped = contract.wrap(function () { });
 
