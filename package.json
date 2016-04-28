@@ -1,7 +1,7 @@
 {
   "name": "rho-cc-node-style-callback",
   "description": "Create rho-contracts for Node-style callbacks",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MPL-2.0",
   "main": "src/node-style-callback.js",
   "scripts": {
