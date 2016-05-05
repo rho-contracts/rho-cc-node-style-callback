@@ -1,7 +1,7 @@
 // jscs:disable disallowNamedUnassignedFunctions
 
 var c = require('rho-contracts'),
-    errors = require('rho-contracts/src/errors'),
+    errors = require('rho-contracts/src/contract-errors'),
     util = require('util'),
     _ = require('underscore');
 
