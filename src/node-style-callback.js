@@ -1,4 +1,4 @@
-// jscs:disable disallowNamedUnassignedFunctions
+/* eslint-disable func-names */
 
 var c = require('rho-contracts'),
     errors = require('rho-contracts/src/contract-errors'),
@@ -17,7 +17,7 @@ var _makeSuccessFnContract = function (contracts) {
 var makeCallback =
     function (defaultError) {
         var result =
-            function callback(/*...*/) {
+            function callback(/* ... */) {
                 var result = c.fun().extraArgs(c.any);
 
                 result._successContract = _makeSuccessFnContract(_.toArray(arguments));
@@ -39,7 +39,7 @@ var makeCallback =
                     var fnWrappedForErr = self._failureContract.wrapper(fn, next, context);
                     var fnWrappedForSuccess = self._successContract.wrapper(fn, next, context);
 
-                    return oldWrapper.call(self, function (/*...*/) {
+                    return oldWrapper.call(self, function (/* ... */) {
                         var err = arguments[0];
 
                         if (arguments.length === 0) {
