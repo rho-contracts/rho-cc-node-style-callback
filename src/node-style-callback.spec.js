@@ -1,4 +1,4 @@
-var c = require('rho-contracts'),
+var c = require('rho-contracts-fork'),
     should = require('should');
 
 c.callback = require('./node-style-callback').withDefaultError(c.error);
