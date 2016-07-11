@@ -12,7 +12,7 @@ Usage
 You must use the Body Labs package, `rho-contracts-fork`:
 ```js
   "dependencies": {
-    "rho-contracts-fork": "^1.2.2"
+    "rho-contracts-fork": "^1.3.0"
   }
 ```
 
