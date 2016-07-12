@@ -5,9 +5,7 @@
   "license": "MPL-2.0",
   "main": "src/node-style-callback.js",
   "scripts": {
-    "jscs": "jscs --config node_modules/bodylabs-javascript-style/jscs/jscsrc-shared src --extract '*.js'",
-    "eslint": "eslint --config node_modules/bodylabs-javascript-style/eslint/eslintrc-shared.yml 'src/**/*.js'",
-    "lint": "npm run jscs && npm run eslint",
+    "lint": "eslint src",
     "unittest": "mocha src",
     "test": "npm run unittest && npm run lint"
   },
@@ -22,9 +20,8 @@
     "rho-contracts": ">=1.2.0"
   },
   "devDependencies": {
-    "bodylabs-javascript-style": "^4.0.0",
-    "eslint": "^2.0.0",
-    "jscs": "^2.1.1",
+    "eslint": "^2.13.0",
+    "eslint-plugin-bodylabs": "^7.1.0",
     "mocha": "~2.0.1",
     "rho-contracts": "git+https://github.com/bodylabs/rho-contracts.js.git#1.2.2",
     "should": "~8.3.1"
