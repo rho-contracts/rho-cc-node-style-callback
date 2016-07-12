@@ -9,10 +9,10 @@ Create [rho-contracts][] for Node-style callbacks.
 Usage
 -----
 
-You must use the Body Labs fork of rho-contracts:
+You must use the Body Labs package, `rho-contracts-fork`:
 ```js
   "dependencies": {
-    "rho-contracts": "git+https://github.com/bodylabs/rho-contracts.js.git#1.1.0"
+    "rho-contracts-fork": "^1.3.0"
   }
 ```
 
@@ -36,7 +36,7 @@ the expected error contract, like this:
 
 ```js
 
-var c = require('rho-contracts');
+var c = require('rho-contracts-fork');
 
 var cc = {};
 
@@ -49,7 +49,7 @@ Installation
 ------------
 
 ```sh
-npm install rho-contracts rho-cc-node-style-callback
+npm install rho-contracts-fork rho-cc-node-style-callback
 ```
 
 

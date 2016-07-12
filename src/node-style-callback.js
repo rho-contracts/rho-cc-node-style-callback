@@ -1,7 +1,7 @@
 /* eslint-disable func-names */
 
-var c = require('rho-contracts'),
-    errors = require('rho-contracts/src/contract-errors'),
+var c = require('rho-contracts-fork'),
+    errors = require('rho-contracts-fork/src/contract-errors'),
     util = require('util'),
     _ = require('underscore');
 

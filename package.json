@@ -1,7 +1,7 @@
 {
   "name": "rho-cc-node-style-callback",
   "description": "Create rho-contracts for Node-style callbacks",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "license": "MPL-2.0",
   "main": "src/node-style-callback.js",
   "scripts": {
@@ -17,13 +17,13 @@
     "underscore": "~1.8.0"
   },
   "peerDependencies": {
-    "rho-contracts": ">=1.2.0"
+    "rho-contracts-fork": ">=1.2.0"
   },
   "devDependencies": {
     "eslint": "^2.13.0",
     "eslint-plugin-bodylabs": "^7.1.0",
     "mocha": "~2.0.1",
-    "rho-contracts": "git+https://github.com/bodylabs/rho-contracts.js.git#1.2.2",
+    "rho-contracts-fork": "^1.3.0",
     "should": "~8.3.1"
   }
 }
